@@ -287,7 +287,7 @@
 <script>
 
 
-const TOTAL_SKULLS = 9;
+const TOTAL_MEMENTOS = 9;
 const FINAL_LOCATION = "the Nickle Galleries, Nicholls Family Art Museum";
 
 const VOICE = {
@@ -296,7 +296,7 @@ const VOICE = {
   e: { label: "An elder",  emoji: "🌳", note: "60+" }
 };
 
-const SKULLS = {
+const MEMENTOS = {
   1: {
     letter: "M",
     quote: "Cyber bullying is a big problem in my school at the moment. […] There's been a boy who's just had it all thrown at him. And he just is alone all the time […] And you feel so bad for him. But then a lot of people would feel embarrassed to play, like you know, do stuff with him because he's the one getting bullied. So, then everybody will start making fun of you for playing with the one who they don't like. You kind of don't know what to do. It's like being bad and good at the same time. It's really confusing.",
@@ -334,8 +334,8 @@ function getParams() { return new URLSearchParams(window.location.search); }
 const app = document.getElementById("app");
 
 function progressPips(currentNum) {
-  let html = '<div class="progress-track" aria-label="Skulls in the hunt">';
-  for (let i = 1; i <= TOTAL_SKULLS; i++) {
+  let html = '<div class="progress-track" aria-label="Mementos in the hunt">';
+  for (let i = 1; i <= TOTAL_MEMENTOS; i++) {
     let cls = "pip";
     if (i === currentNum) cls += " current";
     else if (i < currentNum) cls += " done";
@@ -345,15 +345,15 @@ function progressPips(currentNum) {
   return html;
 }
 
-function renderSkull(num) {
-  const data = SKULLS[num];
-  const nextNum = num < TOTAL_SKULLS ? num + 1 : null;
-  const nextLocation = nextNum ? SKULLS[nextNum].location : FINAL_LOCATION;
+function renderMemento(num) {
+  const data = MEMENTOS[num];
+  const nextNum = num < TOTAL_MEMENTOS ? num + 1 : null;
+  const nextLocation = nextNum ? MEMENTOS[nextNum].location : FINAL_LOCATION;
 
   app.innerHTML = `
     <div class="skull-icon">💀</div>
-    <h1 class="project-title">You've found skull ${num} of 10.</h1>
-    <p class="project-subtitle">Someone left a reflection on living and dying inside this skull. Take a guess at who they were, then collect your letter.</p>
+    <h1 class="project-title">You've found memento ${num} of ${TOTAL_MEMENTOS}.</h1>
+    <p class="project-subtitle">Someone left a reflection on living and dying inside this memento. Take a guess at who they were, then collect your letter.</p>
 
     ${progressPips(num)}
 
@@ -382,16 +382,16 @@ function renderSkull(num) {
     <div class="letter-section">
       <div class="letter-label">Your letter</div>
       <div class="letter-big">${data.letter}</div>
-      <div class="letter-pos">Letter ${num} of ${TOTAL_SKULLS}</div>
-      <p class="letter-instruction"><strong>Write this down.</strong> Collect all ${TOTAL_SKULLS} letters — one from each skull — then bring them to <strong>${FINAL_LOCATION}</strong>.</p>
+      <div class="letter-pos">Letter ${num} of ${TOTAL_MEMENTOS}</div>
+      <p class="letter-instruction"><strong>Write this down.</strong> Collect all ${TOTAL_MEMENTOS} letters — one from each memento — then bring them to <strong>${FINAL_LOCATION}</strong>.</p>
     </div>
 
     <div class="scavenger-section">
       <div class="scavenger-label">The Hunt Continues</div>
       ${nextNum
-        ? `<p class="scavenger-line">The <strong>next skull</strong> is at <strong>${nextLocation}</strong>.</p>`
-        : `<p class="scavenger-line">That was the last skull. Bring your full password to <strong>${FINAL_LOCATION}</strong>.</p>`}
-      <p class="scavenger-line">Skull one began at <strong>the Kinesiology tree</strong>.</p>
+        ? `<p class="scavenger-line">The <strong>next memento</strong> is at <strong>${nextLocation}</strong>.</p>`
+        : `<p class="scavenger-line">That was the last memento. Bring your full password to <strong>${FINAL_LOCATION}</strong>.</p>`}
+      <p class="scavenger-line">Memento one began at <strong>the Kinesiology tree</strong>.</p>
     </div>
 
     <p class="footer-note">
@@ -415,10 +415,10 @@ function renderSkull(num) {
     });
   }
 
-  // Minimal initialization: read ?skull= from URL or default to 1
+  // Minimal initialization: read ?memento= from URL or default to 1
   const params = getParams();
-  const skullNum = parseInt(params.get('skull')) || 1;
-  renderSkull(skullNum);
+  const mementoNum = parseInt(params.get('memento')) || 1;
+  renderMemento(mementoNum);
   bindGuessButtons();
 
 </script>
