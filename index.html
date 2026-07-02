@@ -383,15 +383,15 @@ function renderMemento(num) {
       <div class="letter-label">Your letter</div>
       <div class="letter-big">${data.letter}</div>
       <div class="letter-pos">Letter ${num} of ${TOTAL_MEMENTOS}</div>
-      <p class="letter-instruction"><strong>Write this down.</strong> Collect all ${TOTAL_MEMENTOS} letters — one from each memento — then bring them to <strong>${FINAL_LOCATION}</strong>.</p>
+      <p class="letter-instruction"><strong>Write this down.</strong> Collect all ${TOTAL_MEMENTOS} letters (one from each memento) then bring them to <strong>${FINAL_LOCATION}</strong>.</p>
     </div>
 
     <div class="scavenger-section">
       <div class="scavenger-label">The Hunt Continues</div>
       ${nextNum
-        ? `<p class="scavenger-line">The <strong>next memento</strong> is at <strong>${nextLocation}</strong>.</p>`
+        ? `<p class="scavenger-line">The <strong>next memento</strong> can be found at <strong>${nextLocation}</strong>.</p>`
         : `<p class="scavenger-line">That was the last memento. Bring your full password to <strong>${FINAL_LOCATION}</strong>.</p>`}
-      <p class="scavenger-line">Memento one began at <strong>the Kinesiology tree</strong>.</p>
+      <p class="scavenger-line">Memento one can be found at <strong>the Kinesiology tree</strong>.</p>
     </div>
 
     <p class="footer-note">
