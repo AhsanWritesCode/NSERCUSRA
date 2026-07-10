@@ -158,6 +158,15 @@
               <p style="font-size:13.5px; color:#8A5F47; font-weight:400; line-height:1.6; margin-bottom:16px;">This was the last piece. If you're willing, help us once more by answering the same questions from the start of the experience. Have your views changed?</p>
               <button style="width:100%; padding:14px; background:#fff; border:1px solid #A2472F; color:#A2472F; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:13.5px; cursor:pointer; transition:background .15s;" style-hover="background:#F6EADF;" onClick="{{ openPost }}">{{ postButtonLabel }}</button>
             </div>
+            <div style="background:#FBF2EA; border:1px solid rgba(162,71,47,.22); border-radius:16px; padding:22px; margin-top:16px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#A2472F; margin-bottom:12px;">One more thing</div>
+              <p style="font-size:13.5px; color:#8A5F47; font-weight:400; line-height:1.6; margin-bottom:14px;">Any thoughts you'd like to share about this experience? Totally optional.</p>
+              <sc-if value="{{ feedbackSubmitted }}" hint-placeholder-val="{{ false }}">
+                <p style="font-size:12.5px; color:#5F7A4F; font-weight:500; margin-bottom:12px;">Recorded — thank you. You can still edit and send again below.</p>
+              </sc-if>
+              <textarea value="{{ feedbackText }}" onInput="{{ onFeedbackInput }}" placeholder="Type here..." style="width:100%; min-height:90px; padding:14px; border-radius:14px; border:1px solid rgba(33,30,26,.16); background:#FCFAF4; color:#211E1A; font-family:'Space Grotesk',sans-serif; font-size:13.5px; line-height:1.55; resize:vertical; margin-bottom:14px;"></textarea>
+              <button style="width:100%; padding:14px; background:#211E1A; color:#F7EFE4; border:none; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:13.5px; cursor:pointer; transition:background .15s;" style-hover="background:#332F28;" onClick="{{ submitFeedback }}">{{ feedbackButtonLabel }}</button>
+            </div>
           </sc-if>
 
           <button style="align-self:center; margin-top:26px; background:none; border:none; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#9A9587; cursor:pointer; padding:8px;" onClick="{{ reread }}">Re-read the quote</button>
@@ -218,6 +227,9 @@ class Component extends DCLogic {
   FOOTSTEP_STAGGER = 0.26;
   FOOTSTEP_DURATION = 0.9;
 
+  FEEDBACK_FORM_ID = "1FAIpQLSerDSNlztRounFzqqgQIIF_5Ro8jOs4zHhknNDADNg33lTmRw";
+  FEEDBACK_ENTRY = "entry.1824949882";
+
   VOICE = {
     c: { label: "A child",   mark: "i",   note: "under 12"  },
     s: { label: "A student", mark: "ii",  note: "teens\u201320s" },
@@ -277,7 +289,8 @@ class Component extends DCLogic {
       collected: collected,
       surveyOpen: null,
       pre:  store.pre  || { answers: {}, submitted: false },
-      post: store.post || { answers: {}, submitted: false }
+      post: store.post || { answers: {}, submitted: false },
+      feedback: store.feedback || { text: "", submitted: false }
     };
   }
 
@@ -410,6 +423,24 @@ class Component extends DCLogic {
     this.saveStore({ [key]: next });
     this.setState({ [key]: next, surveyOpen: null });
   }
+  setFeedbackText(value) {
+    this.setState({ feedback: Object.assign({}, this.state.feedback, { text: value }) });
+  }
+  submitFeedback() {
+    const text = (this.state.feedback.text || "").trim();
+    if (!text) return;
+    const body = new URLSearchParams();
+    body.set(this.FEEDBACK_ENTRY, text);
+    fetch("https://docs.google.com/forms/d/e/" + this.FEEDBACK_FORM_ID + "/formResponse", {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString()
+    }).catch(() => {});
+    const next = Object.assign({}, this.state.feedback, { submitted: true });
+    this.saveStore({ feedback: next });
+    this.setState({ feedback: next });
+  }
 
   renderVals() {
     const s = this.state;
@@ -500,6 +531,13 @@ class Component extends DCLogic {
       postButtonLabel: s.post.submitted ? "Answered again \u2014 thank you \u2713" : "Answer the same questions again",
       openPost: () => this.openSurvey("post"),
       reread: () => this.goStep("read"),
+
+      // final-page feedback
+      feedbackText: s.feedback.text,
+      feedbackSubmitted: s.feedback.submitted,
+      feedbackButtonLabel: s.feedback.submitted ? "Send again" : "Send feedback",
+      onFeedbackInput: (e) => this.setFeedbackText(e.target.value),
+      submitFeedback: () => this.submitFeedback(),
 
       // survey overlay
       isSurveyOpen: s.surveyOpen !== null,
