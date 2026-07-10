@@ -56,8 +56,13 @@
             <p style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8A8578; font-weight:400; line-height:1.7;">This is a pilot study for a research project on common humanity funded by NSERC. The broader project is under review by the Research Ethics Board. Because this is a pilot, survey results won't be reported on. They'll be used only to inform the design of the final study.</p>
           </div>
           <div style="background:#FBF2EA; border:1px solid rgba(162,71,47,.22); border-radius:16px; padding:22px 22px 24px; margin-bottom:28px;">
-            <p style="font-size:13.5px; color:#8A5F47; font-weight:400; line-height:1.6; margin-bottom:16px;">If you'd like to support the research, consider filling out this survey before you continue.</p>
-            <button style="width:100%; padding:14px; background:#fff; border:1px solid #A2472F; color:#A2472F; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:13.5px; cursor:pointer; transition:background .15s;" style-hover="background:#FBF2EA;" onClick="{{ openPre }}">{{ preButtonLabel }}</button>
+            <sc-if value="{{ preSubmitted }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size:13.5px; color:#5F7A4F; font-weight:500; line-height:1.6;">Thank you for supporting our work.</p>
+            </sc-if>
+            <sc-if value="{{ !preSubmitted }}" hint-placeholder-val="{{ true }}">
+              <p style="font-size:13.5px; color:#8A5F47; font-weight:400; line-height:1.6; margin-bottom:16px;">If you'd like to support the research, consider filling out this survey before you continue.</p>
+              <button style="width:100%; padding:14px; background:#fff; border:1px solid #A2472F; color:#A2472F; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:13.5px; cursor:pointer; transition:background .15s;" style-hover="background:#FBF2EA;" onClick="{{ openPre }}">Answer a few questions (2 min)</button>
+            </sc-if>
           </div>
           <button style="width:100%; padding:17px; background:#211E1A; color:#F7EFE4; border:none; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:background .2s;" style-hover="background:#332F28;" onClick="{{ beginHunt }}">Begin the scavenger hunt <span style="font-family:'Newsreader',serif; font-size:18px;">&rarr;</span></button>
         </div>
@@ -155,8 +160,13 @@
               <p style="font-family:'Newsreader',serif; font-weight:300; font-size:19px; line-height:1.55; color:#2B2823;">Make your way to TFDL at 3 PM</p>
             </div>
             <div style="background:#FBF2EA; border:1px solid rgba(162,71,47,.22); border-radius:16px; padding:22px; margin-top:16px;">
-              <p style="font-size:13.5px; color:#8A5F47; font-weight:400; line-height:1.6; margin-bottom:16px;">This was the last piece. If you're willing, help us once more by answering the same questions from the start of the experience. Have your views changed?</p>
-              <button style="width:100%; padding:14px; background:#fff; border:1px solid #A2472F; color:#A2472F; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:13.5px; cursor:pointer; transition:background .15s;" style-hover="background:#F6EADF;" onClick="{{ openPost }}">{{ postButtonLabel }}</button>
+              <sc-if value="{{ postSubmitted }}" hint-placeholder-val="{{ false }}">
+                <p style="font-size:13.5px; color:#5F7A4F; font-weight:500; line-height:1.6;">Thank you for supporting our work.</p>
+              </sc-if>
+              <sc-if value="{{ !postSubmitted }}" hint-placeholder-val="{{ true }}">
+                <p style="font-size:13.5px; color:#8A5F47; font-weight:400; line-height:1.6; margin-bottom:16px;">This was the last piece. If you're willing, help us once more by answering the same questions from the start of the experience. Have your views changed?</p>
+                <button style="width:100%; padding:14px; background:#fff; border:1px solid #A2472F; color:#A2472F; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:13.5px; cursor:pointer; transition:background .15s;" style-hover="background:#F6EADF;" onClick="{{ openPost }}">Answer the same questions again</button>
+              </sc-if>
             </div>
             <div style="background:#FBF2EA; border:1px solid rgba(162,71,47,.22); border-radius:16px; padding:22px; margin-top:16px;">
               <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#A2472F; margin-bottom:12px;">One more thing</div>
@@ -186,9 +196,6 @@
       <button aria-label="Close" style="position:absolute; top:18px; right:18px; width:34px; height:34px; border-radius:50%; border:1px solid rgba(33,30,26,.15); background:#F3EBDB; color:#6E6A61; font-size:18px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;" onClick="{{ closeSurvey }}">&times;</button>
       <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#A2472F; margin-bottom:14px;">{{ surveyTitle }}</div>
       <p style="font-family:'Newsreader',serif; font-weight:300; font-style:italic; font-size:18px; line-height:1.6; color:#2B2823; margin-bottom:10px;">{{ surveyIntro }}</p>
-      <sc-if value="{{ surveyNote }}" hint-placeholder-val="{{ false }}">
-        <p style="font-size:12.5px; color:#5F7A4F; font-weight:500; margin-bottom:10px;">Recorded — thank you. You can still adjust your answers below.</p>
-      </sc-if>
       <div style="display:flex; flex-direction:column; gap:28px; margin:26px 0 8px;">
         <sc-for list="{{ surveyQuestions }}" as="q" hint-placeholder-count="4">
           <div>
@@ -229,6 +236,13 @@ class Component extends DCLogic {
 
   FEEDBACK_FORM_ID = "1FAIpQLSerDSNlztRounFzqqgQIIF_5Ro8jOs4zHhknNDADNg33lTmRw";
   FEEDBACK_ENTRY = "entry.1824949882";
+
+  PRE_SURVEY_FORM_ID = "1FAIpQLSfqKdPyYm6qE-sFU1ig_jH9kWd2tJGsHjERxVUeT98kY-jaLQ";
+  POST_SURVEY_FORM_ID = "1FAIpQLSdO0T2JnX3cjjKDmATCsZcdcQIzmUrVvblnxb79a4X-okADiQ";
+  SURVEY_ENTRIES = [
+    "entry.1922356476", "entry.1239391032", "entry.877725371", "entry.840215108",
+    "entry.1295897154", "entry.1777768531", "entry.1258253229", "entry.1224835382"
+  ];
 
   VOICE = {
     c: { label: "A child",   mark: "i",   note: "under 12"  },
@@ -419,7 +433,19 @@ class Component extends DCLogic {
   }
   submitSurvey(ctx) {
     const key = ctx === "post" ? "post" : "pre";
-    const next = Object.assign({}, this.state[key], { submitted: true });
+    const cur = this.state[key];
+    const formId = key === "post" ? this.POST_SURVEY_FORM_ID : this.PRE_SURVEY_FORM_ID;
+    const body = new URLSearchParams();
+    this.SURVEY_ENTRIES.forEach((entry, qIdx) => {
+      if (cur.answers[qIdx] !== undefined) body.set(entry, cur.answers[qIdx]);
+    });
+    fetch("https://docs.google.com/forms/d/e/" + formId + "/formResponse", {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString()
+    }).catch(() => {});
+    const next = Object.assign({}, cur, { submitted: true });
     this.saveStore({ [key]: next });
     this.setState({ [key]: next, surveyOpen: null });
   }
@@ -508,7 +534,7 @@ class Component extends DCLogic {
 
       // intro
       aboutParas: this.ABOUT,
-      preButtonLabel: s.pre.submitted ? "Answered \u2014 thank you \u2713" : "Answer a few questions (2 min)",
+      preSubmitted: s.pre.submitted,
       openPre: () => this.openSurvey("pre"),
       beginHunt: () => this.goStep("read"),
 
@@ -528,7 +554,7 @@ class Component extends DCLogic {
       nextLoc: nextLoc,
       currentLoc: currentLoc,
       footprints: this.buildFootprints(),
-      postButtonLabel: s.post.submitted ? "Answered again \u2014 thank you \u2713" : "Answer the same questions again",
+      postSubmitted: s.post.submitted,
       openPost: () => this.openSurvey("post"),
       reread: () => this.goStep("read"),
 
@@ -545,7 +571,6 @@ class Component extends DCLogic {
       surveyIntro: ctx === "post"
         ? "The hunt is done \u2014 if you're willing, answer the same questions once more. Comparing your before-and-after is the whole point."
         : "A few quick statements about how you tend to relate to yourself. There's no right answer, and it takes about two minutes.",
-      surveyNote: sv.submitted,
       surveyQuestions: surveyQuestions,
       likertLow: this.LIKERT[0],
       likertHigh: this.LIKERT[1],
