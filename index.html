@@ -24,11 +24,14 @@
         <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#A2472F;">{{ progressLabel }}</span>
       </div>
       <div style="position:relative; width:100%; aspect-ratio:547 / 365; border-radius:14px; overflow:hidden; border:1px solid rgba(33,30,26,.14); box-shadow:0 18px 40px -24px rgba(33,30,26,.55); background:#E7DCC9;">
+        <div style="{{ boardImageStyle }}"></div>
         <div style="{{ gridStyle }}">
           <sc-for list="{{ tiles }}" as="tile" hint-placeholder-count="5">
-            <div style="position:relative; overflow:hidden;">
-              <div style="{{ tile.photoStyle }}"></div>
-              <div style="{{ tile.frostStyle }}"></div>
+            <div style="position:relative; overflow:hidden; margin:-1px;">
+              <div style="{{ tile.revealStyle }}">
+                <div style="{{ tile.blurStyle }}"></div>
+                <div style="{{ tile.tintStyle }}"></div>
+              </div>
             </div>
           </sc-for>
         </div>
@@ -312,8 +315,57 @@ class Component extends DCLogic {
       surveyOpen: null,
       pre:  store.pre  || { answers: {}, submitted: false },
       post: store.post || { answers: {}, submitted: false },
-      feedback: store.feedback || { text: "", submitted: false }
+      feedback: store.feedback || { text: "", submitted: false },
+      blurredImg: null
     };
+  }
+
+  componentDidMount() {
+    this.prepareBlurredImage();
+  }
+
+  // Pre-bakes a softened copy of the board photo onto an offscreen canvas so each
+  // puzzle tile can slice a plain (non-live-filtered) image. Slicing a live
+  // backdrop-filter/CSS-filter blur per tile leaves a visible seam at tile
+  // boundaries (the blur can't sample past its own element's edge). Using
+  // canvas's own `ctx.filter = 'blur()'` avoids that but has its own seam bug
+  // (Chromium processes canvas blur in internal tiles, visible as a seam on
+  // larger canvases). Downscaling instead sidesteps both: drawImage at a tiny
+  // resolution is a basic, seam-free operation, and the browser's normal
+  // upscaling smoothing produces the soft look when it's stretched back up.
+  prepareBlurredImage() {
+    const img = new Image();
+    img.onload = () => {
+      // Progressive halving gives much smoother results than one drastic
+      // downscale (each step's bilinear resample has a gentle ratio to work
+      // with), while still only ever using plain drawImage — no filter, no
+      // seam risk — down to a soft target size, then back up part-way so the
+      // final slice isn't so tiny it looks blocky.
+      let cw = img.naturalWidth, ch = img.naturalHeight;
+      let src = img;
+      const minDim = Math.min(cw, ch);
+      const steps = Math.max(1, Math.round(Math.log2(minDim / 12)));
+      for (let i = 0; i < steps; i++) {
+        const nw = Math.max(1, Math.round(cw / 2));
+        const nh = Math.max(1, Math.round(ch / 2));
+        const step = document.createElement("canvas");
+        step.width = nw;
+        step.height = nh;
+        step.getContext("2d").drawImage(src, 0, 0, nw, nh);
+        src = step;
+        cw = nw; ch = nh;
+      }
+      const targetW = 130;
+      const targetH = Math.max(1, Math.round(img.naturalHeight * (targetW / img.naturalWidth)));
+      const out = document.createElement("canvas");
+      out.width = targetW;
+      out.height = targetH;
+      out.getContext("2d").drawImage(src, 0, 0, targetW, targetH);
+      try {
+        this.setState({ blurredImg: out.toDataURL() });
+      } catch (e) {}
+    };
+    img.src = this.IMG;
   }
 
   loadStore() {
@@ -340,19 +392,37 @@ class Component extends DCLogic {
   }
   gridStyle() {
     const d = this.gridDims();
-    return { display: "grid", gridTemplateColumns: "repeat(" + d.cols + ", 1fr)", gridTemplateRows: "repeat(" + d.rows + ", 1fr)", width: "100%", height: "100%" };
+    return {
+      display: "grid",
+      gridTemplateColumns: "repeat(" + d.cols + ", 1fr)",
+      gridTemplateRows: "repeat(" + d.rows + ", 1fr)",
+      width: "calc(100% + 2px)", height: "calc(100% + 2px)",
+      margin: "-1px"
+    };
   }
-  frostStyle(collected) {
+  revealStyle(collected) {
     return {
       position: "absolute", inset: 0,
-      background: "rgba(245,238,227,0.62)",
-      backdropFilter: collected ? "blur(0px)" : "blur(" + this.FROST + "px) saturate(0.8)",
-      WebkitBackdropFilter: collected ? "blur(0px)" : "blur(" + this.FROST + "px) saturate(0.8)",
-      boxShadow: collected ? "none" : "inset 0 0 0 1px rgba(33,30,26,0.10), inset 0 0 34px rgba(255,255,255,0.28)",
       opacity: collected ? 0 : 1,
       transform: collected ? "translateY(-10px) scale(1.08)" : "none",
       pointerEvents: "none",
-      transition: "opacity 1s cubic-bezier(.2,.7,.2,1), transform 1s cubic-bezier(.2,.7,.2,1), backdrop-filter 1s ease, -webkit-backdrop-filter 1s ease"
+      transition: "opacity 1s cubic-bezier(.2,.7,.2,1), transform 1s cubic-bezier(.2,.7,.2,1)"
+    };
+  }
+  tileBlurStyle(px, py, d) {
+    return {
+      position: "absolute", inset: 0,
+      backgroundImage: "url('" + (this.state.blurredImg || this.IMG) + "')",
+      backgroundSize: (d.cols * 100) + "% " + (d.rows * 100) + "%",
+      backgroundPosition: px + "% " + py + "%",
+      backgroundRepeat: "no-repeat"
+    };
+  }
+  tintStyle() {
+    return {
+      position: "absolute", inset: 0,
+      background: "rgba(245,238,227,0.62)",
+      boxShadow: "inset 0 0 0 1px rgba(33,30,26,0.10), inset 0 0 34px rgba(255,255,255,0.28)"
     };
   }
   buildTiles() {
@@ -364,14 +434,9 @@ class Component extends DCLogic {
       const px = d.cols > 1 ? (c / (d.cols - 1)) * 100 : 0;
       const py = d.rows > 1 ? (r / (d.rows - 1)) * 100 : 0;
       tiles.push({
-        photoStyle: {
-          position: "absolute", inset: 0,
-          backgroundImage: "url('" + this.IMG + "')",
-          backgroundSize: (d.cols * 100) + "% " + (d.rows * 100) + "%",
-          backgroundPosition: px + "% " + py + "%",
-          backgroundRepeat: "no-repeat"
-        },
-        frostStyle: this.frostStyle(!!this.state.collected[i + 1])
+        revealStyle: this.revealStyle(!!this.state.collected[i + 1]),
+        blurStyle: this.tileBlurStyle(px, py, d),
+        tintStyle: this.tintStyle()
       });
     }
     return tiles;
@@ -527,6 +592,12 @@ class Component extends DCLogic {
 
     return {
       // board
+      boardImageStyle: {
+        position: "absolute", inset: "-1px",
+        backgroundImage: "url('" + this.IMG + "')",
+        backgroundSize: "cover",
+        backgroundPosition: "center"
+      },
       tiles: this.buildTiles(),
       gridStyle: this.gridStyle(),
       progressLabel: pad(collectedCount) + " / " + pad(total) + " uncovered",
