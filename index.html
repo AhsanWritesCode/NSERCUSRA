@@ -48,7 +48,7 @@
           <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#A2472F; margin-bottom:14px;">Before you begin</div>
           <h2 style="font-family:'Newsreader',serif; font-weight:400; font-size:29px; line-height:1.15; letter-spacing:-.01em; color:#211E1A; margin-bottom:24px;">Why this project exists</h2>
           <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:30px;">
-            <sc-for list="{{ aboutParas }}" as="para" hint-placeholder-count="3">
+            <sc-for list="{{ aboutParas }}" as="para" hint-placeholder-count="9">
               <p style="font-family:'Newsreader',serif; font-weight:300; font-size:17px; line-height:1.68; color:#2B2823; text-wrap:pretty;">{{ para }}</p>
             </sc-for>
           </div>
@@ -59,7 +59,7 @@
             <p style="font-size:13.5px; color:#8A5F47; font-weight:400; line-height:1.6; margin-bottom:16px;">If you'd like to support the research, consider filling out this survey before you continue.</p>
             <button style="width:100%; padding:14px; background:#fff; border:1px solid #A2472F; color:#A2472F; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:13.5px; cursor:pointer; transition:background .15s;" style-hover="background:#FBF2EA;" onClick="{{ openPre }}">{{ preButtonLabel }}</button>
           </div>
-          <button style="width:100%; padding:17px; background:#211E1A; color:#F7EFE4; border:none; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:background .2s;" style-hover="background:#332F28;" onClick="{{ beginHunt }}">Begin the hunt <span style="font-family:'Newsreader',serif; font-size:18px;">&rarr;</span></button>
+          <button style="width:100%; padding:17px; background:#211E1A; color:#F7EFE4; border:none; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:background .2s;" style-hover="background:#332F28;" onClick="{{ beginHunt }}">Begin the scavenger hunt <span style="font-family:'Newsreader',serif; font-size:18px;">&rarr;</span></button>
         </div>
       </sc-if>
 
@@ -118,19 +118,33 @@
           <div style="text-align:center; margin:34px 0;">
             <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#A2472F; margin-bottom:16px;">{{ pieceOrdinal }}</div>
             <div style="display:flex; align-items:center; justify-content:center; height:88px; font-family:'Newsreader',serif; font-weight:400; font-size:72px; line-height:1; color:#211E1A; animation:drop .7s .15s both;">{{ revealCount }}</div>
-            <p style="font-size:13px; color:#8A8578; font-weight:300; margin-top:18px; line-height:1.6;">pieces of the picture uncovered — look up, a new one just cleared.</p>
+            <p style="font-size:13px; color:#8A8578; font-weight:300; margin-top:18px; line-height:1.6;">pieces of the picture uncovered</p>
           </div>
 
           <sc-if value="{{ notFinal }}" hint-placeholder-val="{{ true }}">
-            <div style="background:#FBF2EA; border:1px solid rgba(162,71,47,.22); border-radius:18px; padding:22px 24px 24px;">
-              <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:1px dashed rgba(162,71,47,.32); margin-bottom:18px;">
+            <div style="background:#FBF2EA; border:1px solid rgba(162,71,47,.22); border-radius:18px; padding:16px 24px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
                 <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#A2472F;">The hunt continues</span>
                 <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:#BE9077;">{{ remainingLabel }}</span>
               </div>
-              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:#BE9077; margin-bottom:10px;">The next object can be found at</div>
-              <div style="display:flex; align-items:baseline; gap:12px;">
-                <span style="font-family:'Newsreader',serif; font-size:26px; line-height:1; color:#A2472F;">&rarr;</span>
-                <span style="font-family:'Newsreader',serif; font-style:italic; font-size:28px; line-height:1.18; color:#2B2823; text-wrap:balance;">{{ nextLoc }}</span>
+            </div>
+            <div style="padding:36px 2px 6px;">
+              <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:#BE9077; margin-bottom:26px;">The next object can be found at</div>
+              <div style="display:flex; align-items:center;">
+                <span style="font-family:'Newsreader',serif; font-style:italic; font-size:16px; color:#2B2823; white-space:nowrap; flex-shrink:0; padding-right:14px;">{{ currentLoc }}</span>
+                <div style="flex:1; position:relative; height:34px; min-width:70px;">
+                  <div style="position:absolute; left:6%; right:6%; top:50%; border-top:1px dashed rgba(162,71,47,.28);"></div>
+                  <sc-for list="{{ footprints }}" as="fp" hint-placeholder-count="7">
+                    <span style="{{ fp.wrapStyle }}">
+                      <span style="{{ fp.style }}">
+                        <svg viewBox="0 0 24 40" width="14" height="23" fill="#8A3A26" style="display:block; opacity:.82;">
+                          <path d="M12,2 C17,2 20,9 19,16 C18.5,20 18,23 17.5,26 C17,31 17,34 15,37 C13.5,39 10.5,39 9,37 C7,34 7,31 6.5,26 C6,23 5.5,20 5,16 C4,9 7,2 12,2 Z"></path>
+                        </svg>
+                      </span>
+                    </span>
+                  </sc-for>
+                </div>
+                <span style="font-family:'Newsreader',serif; font-style:italic; font-size:16px; color:#2B2823; white-space:nowrap; flex-shrink:0; padding-left:14px; text-align:right; text-wrap:balance;">{{ nextLoc }}</span>
               </div>
             </div>
           </sc-if>
@@ -138,10 +152,10 @@
           <sc-if value="{{ isFinal }}" hint-placeholder-val="{{ false }}">
             <div style="background:#FBF2EA; border:1px solid rgba(162,71,47,.22); border-radius:18px; padding:24px;">
               <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#A2472F; margin-bottom:12px;">The final gathering</div>
-              <p style="font-family:'Newsreader',serif; font-weight:300; font-size:19px; line-height:1.55; color:#2B2823;">The picture is whole. You've stood in this room before — make your way to the place in the photo. That's where we gather.</p>
+              <p style="font-family:'Newsreader',serif; font-weight:300; font-size:19px; line-height:1.55; color:#2B2823;">Make your way to TFDL at 3 PM</p>
             </div>
             <div style="background:#FBF2EA; border:1px solid rgba(162,71,47,.22); border-radius:16px; padding:22px; margin-top:16px;">
-              <p style="font-size:13.5px; color:#8A5F47; font-weight:400; line-height:1.6; margin-bottom:16px;">This was the last piece. If you're willing, help us once more by answering the same questions again.</p>
+              <p style="font-size:13.5px; color:#8A5F47; font-weight:400; line-height:1.6; margin-bottom:16px;">This was the last piece. If you're willing, help us once more by answering the same questions from the start of the experience. Have your views changed?</p>
               <button style="width:100%; padding:14px; background:#fff; border:1px solid #A2472F; color:#A2472F; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:13.5px; cursor:pointer; transition:background .15s;" style-hover="background:#F6EADF;" onClick="{{ openPost }}">{{ postButtonLabel }}</button>
             </div>
           </sc-if>
@@ -152,7 +166,7 @@
 
     </div>
 
-    <div style="text-align:center; font-size:11px; color:#A8A398; font-weight:300; padding:16px 0 26px;">Ahsan Tariq &amp; Dr. Helen Ai He · C3 Lab, University of Calgary</div>
+    <div style="text-align:center; font-size:11px; color:#A8A398; font-weight:300; padding:16px 0 26px;">Ahsan Tariq · C3 Lab, University of Calgary</div>
   </div>
 </div>
 
@@ -200,6 +214,9 @@ class Component extends DCLogic {
 
   IMG = "campus.png";
   STORAGE_KEY = "nsura_puzzle_v1";
+  FOOTSTEP_COUNT = 7;
+  FOOTSTEP_STAGGER = 0.26;
+  FOOTSTEP_DURATION = 0.9;
 
   VOICE = {
     c: { label: "A child",   mark: "i",   note: "under 12"  },
@@ -211,22 +228,28 @@ class Component extends DCLogic {
   MEMENTOS = {
     1: {
       quote: "Cyber bullying is a big problem in my school at the moment. There's been a boy who's just had it all thrown at him. And he just is alone all the time. And you feel so bad for him \u2014 but a lot of people would feel embarrassed to do stuff with him, because he's the one getting bullied. It's like being bad and good at the same time. It's really confusing.",
-      location: "the Kinesiology tree"
+      location: "table 1"
     },
     2: {
       quote: "I have been a good mother, a faithful wife and I've kept my family together. To me, that is more important than any career a person can have, and more important than the amount of money a person has. You can't buy that as you know.",
-      location: "the briefcase"
+      location: "table 2"
     },
     3: {
       quote: "So, for me it's been, I spend so much time trying to re-connect and actually not feeling any more connected. And people think that kind of social media will suffice of bringing someone out of loneliness. Kind of messaging every month saying, 'are you OK?' is very different to picking up the phone and having a 10-minute conversation about how life has been. But I think people now think that a quick message suffices for contact … I think you can lie a lot on social media. I think you can hide a lot on social media and people don't want to hear it via message",
-      location: "the third stop"
+      location: "table 3"
     }
   };
 
   ABOUT = [
-    "When I was 17, I was at one of the lowest points of my life. I had always been good at school, and I wasn't anymore. I only ever had one or two friends, and at that time I had none. The dynamics within my family had never been healthy, but then they felt unbearable. I almost quit. And then I got help. From people who were trying their best, every day, like I was. People who undoubtedly had their own problems, but chose to focus on mine for hours at a time. And I got better than I was, thanks to them. There are still difficult days, but I'm better than I was.",
-    "This project is, in a way, a result of that period of my life. Everyone has struggles. Often, we feel alone in them. We feel like there's something wrong with us specifically; that everyone else has it figured out. This project is meant to show that that's not the case. It's meant to show that we're not alone in our experience of them. The struggles you have might be similar to the struggles of a 65 year old, or to the struggles of a 12 year old.",
-    "Through reflection on perspectives from across the human lifespan on aspects of the lived human experience, this project seeks to foster common humanity. Common humanity is the recognition that all people fail, make mistakes, and feel inadequate in some way and frames suffering in light of the shared human experience."
+    "Across these tables there are objects. Each holds words from someone who has been where you are. A twelve-year-old. A sixty-five-year-old. People you'll never meet, describing something you might recognize.",
+    "I created these objects and placed them here because when I was seventeen, I thought I was the only one struggling.",
+    "I had always been good at school, and I wasn't anymore. I only ever had one or two friends at a time, and then I had none. The dynamics within my family had never been healthy, but then they felt unbearable. I almost quit.",
+    "And then I got help. From people trying their best, every day, like I was. People who undoubtedly had their own problems but chose to focus on mine for hours at a time. I got better than I was. There are still difficult days, but I'm better than I was.",
+    "What took years to understand was that the thing making it unbearable wasn't the struggle itself. It was the feeling that I was uniquely broken. That everyone else had it figured out.",
+    "They didn't. They don't.",
+    "Psychologists call this recognition common humanity: the understanding that all people fail, make mistakes, and feel inadequate, and that suffering makes more sense in light of what we share than what isolates us. This project is an attempt to put that recognition somewhere you can find it.",
+    "You are not alone. Scan the objects and find the proof.",
+    "— Ahsan, fourth-year Computer Science, University of Calgary"
   ];
 
   LIKERT = ["Almost never", "Almost always"];
@@ -318,6 +341,32 @@ class Component extends DCLogic {
     }
     return tiles;
   }
+  buildFootprints() {
+    const n = this.FOOTSTEP_COUNT;
+    const stagger = this.FOOTSTEP_STAGGER;
+    const duration = this.FOOTSTEP_DURATION;
+    const steps = [];
+    for (let i = 0; i < n; i++) {
+      const isLeftFoot = i % 2 === 0;
+      const zig = isLeftFoot ? -1 : 1;
+      const inset = 14;
+      const leftPct = n > 1 ? inset + (i / (n - 1)) * (100 - inset * 2) : 50;
+      steps.push({
+        wrapStyle: {
+          position: "absolute",
+          left: leftPct + "%",
+          top: "50%",
+          transform: "translate(-50%, calc(-50% + " + (zig * 9) + "px)) rotate(" + (-90 + zig * 8) + "deg) scaleX(" + (isLeftFoot ? 1 : -1) + ") scaleY(-1)"
+        },
+        style: {
+          display: "inline-block",
+          opacity: 0,
+          animation: "stepFade " + duration + "s ease-out " + (i * stagger).toFixed(2) + "s 1 forwards"
+        }
+      });
+    }
+    return steps;
+  }
   surveyOptStyle(selected) {
     return {
       position: "relative", zIndex: 1, width: "34px", height: "34px", borderRadius: "50%",
@@ -381,6 +430,8 @@ class Component extends DCLogic {
     const nm = nextNum ? this.MEMENTOS[nextNum] : null;
     const nextRaw = (nm && nm.location) ? nm.location : "another stop on campus";
     const nextLoc = nextRaw.charAt(0).toUpperCase() + nextRaw.slice(1);
+    const currentRaw = data.location || "this spot";
+    const currentLoc = currentRaw.charAt(0).toUpperCase() + currentRaw.slice(1);
 
     /* GUESS STEP temporarily removed (2026-07 feedback). Re-enable together with the guess UI.
     const voiceList = Object.keys(this.VOICE).map(k => {
@@ -391,7 +442,7 @@ class Component extends DCLogic {
 
     let boardCaption;
     if (s.step === "intro") boardCaption = "Reveal the image to meet like-minded peers";
-    else if (isFinal) boardCaption = "You've been standing in this place. Recognize it?";
+    else if (isFinal) boardCaption = "Congratulations! The final meeting spot has been revealed.";
     else if (collectedCount === 0) boardCaption = "A place on campus, waiting to be seen.";
     else boardCaption = "The picture is coming together.";
 
@@ -444,6 +495,8 @@ class Component extends DCLogic {
       revealCount: pad(collectedCount) + " / " + pad(total),
       remainingLabel: remaining === 1 ? "1 piece still hidden" : remaining + " pieces still hidden",
       nextLoc: nextLoc,
+      currentLoc: currentLoc,
+      footprints: this.buildFootprints(),
       postButtonLabel: s.post.submitted ? "Answered again \u2014 thank you \u2713" : "Answer the same questions again",
       openPost: () => this.openSurvey("post"),
       reread: () => this.goStep("read"),
