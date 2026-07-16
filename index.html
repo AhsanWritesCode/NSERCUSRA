@@ -157,7 +157,7 @@
           <sc-if value="{{ isFinal }}" hint-placeholder-val="{{ false }}">
             <div style="background:#FBF2EA; border:1px solid rgba(162,71,47,.22); border-radius:18px; padding:24px;">
               <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#A2472F; margin-bottom:12px;">The final gathering</div>
-              <p style="font-family:'Newsreader',serif; font-weight:300; font-size:19px; line-height:1.55; color:#2B2823;">Location and Time TBD</p>
+              <p style="font-family:'Newsreader',serif; font-weight:300; font-size:19px; line-height:1.55; color:#2B2823;">ICT 743 at 1:15 PM on July 16, 2026</p>
             </div>
             <div style="background:#FBF2EA; border:1px solid rgba(162,71,47,.22); border-radius:16px; padding:22px; margin-top:16px;">
               <sc-if value="{{ postSubmitted }}" hint-placeholder-val="{{ false }}">
@@ -579,7 +579,7 @@ class Component extends DCLogic {
     */
 
     let boardCaption;
-    if (s.step === "intro") boardCaption = "Reveal the image to meet like-minded peers";
+    if (s.step === "intro") boardCaption = "Reveal the image to discuss the experience with like-minded peers";
     else if (isFinal) boardCaption = "Congratulations! The final meeting spot has been revealed.";
     else if (collectedCount === 0) boardCaption = "A place on campus, waiting to be seen.";
     else boardCaption = "The picture is coming together.";
