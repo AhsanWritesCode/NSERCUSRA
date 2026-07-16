@@ -654,12 +654,10 @@ class Component extends DCLogic {
 
       // survey overlay
       isSurveyOpen: s.surveyOpen !== null,
-      surveyTitle: ctx === "post" ? "One last time" : "Common Humanity Self-Report Scale: How do you relate to yourself? (~2 min)",
+      surveyTitle: "Common Humanity Self-Report Scale: How do you relate to yourself? (~2 min)",
       surveySubtitle: "Research Study: Fostering Common Humanity Among University of Calgary Students",
       surveyCitation: "Neff, K. D. (2003). The development and validation of a scale to measure self-compassion. Self and Identity, 2(2), 223\u2013250.",
-      surveyIntro: ctx === "post"
-        ? "The hunt is done \u2014 if you're willing, answer the same questions once more. Comparing your before-and-after is the whole point."
-        : "",
+      surveyIntro: "",
       surveyQuestions: surveyQuestions,
       likertLow: this.LIKERT[0],
       likertHigh: this.LIKERT[1],
