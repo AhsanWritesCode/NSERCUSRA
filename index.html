@@ -15,7 +15,7 @@
 </helmet>
 
 <div style="min-height:100vh; display:flex; flex-direction:column; align-items:center;">
-  <div style="width:100%; max-width:480px; min-height:100vh; display:flex; flex-direction:column; padding:0 26px;">
+  <div style="width:100%; max-width:680px; min-height:100vh; display:flex; flex-direction:column; padding:0 26px; container-type:inline-size;">
 
     <!-- centers the map + active step together as one block when the step's content is short
          (e.g. the sparse post-reveal screen); has no visible effect on steps whose own content
@@ -28,7 +28,7 @@
     <sc-if value="{{ !isRead }}" hint-placeholder-val="{{ true }}">
       <div style="padding:26px 0 16px; animation:fade .7s ease both;">
         <sc-if value="{{ showRevealAnnounce }}" hint-placeholder-val="{{ false }}">
-          <p style="text-align:center; font-family:'Newsreader',serif; font-style:italic; font-weight:400; font-size:21px; color:#2B2823; margin:0 0 14px; animation:drop .7s .15s both;">The next location has been revealed</p>
+          <p style="text-align:center; font-family:'Newsreader',serif; font-style:italic; font-weight:400; font-size:{{ announceFontSize }}; color:#2B2823; margin:0 0 14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; animation:drop .7s .15s both;">{{ mapCaption }}</p>
         </sc-if>
         <div style="position:relative; width:calc(100% + 32px); margin:0 -16px; aspect-ratio:400 / 265; border-radius:14px; overflow:hidden; box-shadow:0 18px 40px -24px rgba(33,30,26,.4); border:1px solid rgba(162,71,47,.22); background:radial-gradient(120% 90% at 50% -10%, #FBF6EE 0%, #F3EBDB 55%, #E7D6AE 100%);">
           <svg viewBox="0 0 400 265" width="100%" height="100%" style="display:block;">
@@ -71,7 +71,7 @@
             <span style="{{ b.labelStyle }}">{{ b.label }}</span>
           </sc-for>
         </div>
-        <p style="text-align:center; font-family:'Newsreader',serif; font-style:italic; font-size:14px; color:#8A8578; margin-top:12px;">{{ mapCaption }}</p>
+        <p style="text-align:center; font-family:'Newsreader',serif; font-style:italic; font-size:clamp(14px, 3.27cqw, 20px); color:#8A8578; margin-top:12px;">{{ belowMapText }}</p>
       </div>
     </sc-if>
 
@@ -640,7 +640,7 @@ class Component extends DCLogic {
           top: (b.cy / 265 * 100) + "%",
           transform: "translate(-50%, -50%)",
           fontFamily: "'JetBrains Mono', monospace",
-          fontSize: "8px",
+          fontSize: "clamp(8px, 1.87cqw, 11px)",
           fontWeight: 600,
           color: "#A2472F",
           opacity: filled ? 0 : 0.7,
@@ -649,11 +649,11 @@ class Component extends DCLogic {
         },
         labelStyle: Object.assign({
           position: "absolute",
-          width: "78px",
+          width: "clamp(78px, 18.22cqw, 111px)",
           fontFamily: "'Newsreader', serif",
           fontStyle: "italic",
           fontWeight: 500,
-          fontSize: "12.5px",
+          fontSize: "clamp(12.5px, 2.92cqw, 18px)",
           lineHeight: "1.2",
           color: "#6E4A34",
           opacity: labelVisible ? 1 : 0,
@@ -662,7 +662,7 @@ class Component extends DCLogic {
         }, ({
           left:  { left: ((b.cx - 28) / 400 * 100) + "%", top: (b.cy / 265 * 100) + "%", transform: "translate(-100%, -50%)", textAlign: "right" },
           right: { left: ((b.cx + 28) / 400 * 100) + "%", top: (b.cy / 265 * 100) + "%", transform: "translate(0, -50%)", textAlign: "left" },
-          below: { left: (b.cx / 400 * 100) + "%", top: ((b.cy + b.hh + 13) / 265 * 100) + "%", transform: "translate(-50%, 0)", textAlign: "center", width: "92px" }
+          below: { left: (b.cx / 400 * 100) + "%", top: ((b.cy + b.hh + 13) / 265 * 100) + "%", transform: "translate(-50%, 0)", textAlign: "center", width: "clamp(92px, 21.50cqw, 130px)" }
         })[{ MSC: "left", TFDL: "below", SS: "right", ST: "right", ICT: "left" }[bid] || "below"]),
         label: b.label
       };
@@ -674,11 +674,26 @@ class Component extends DCLogic {
     const currentB = this.BUILDINGS[currentBid];
     const ictB = this.BUILDINGS.ICT;
 
+    // shown as the announcement heading above the map (gated by showRevealAnnounce below)
     let mapCaption;
     if (s.step === "intro") mapCaption = "Your route across campus begins at MacEwan Student Centre.";
-    else if (isFinal) mapCaption = "The map is complete. Meet us at ICT.";
+    else if (isFinal) mapCaption = "";
     else if (s.step === "read") mapCaption = "";
     else mapCaption = "The next object can be found at " + nextLoc + ".";
+
+    // Keep the announcement on one line no matter how long the revealed location's name
+    // is (ranges from "ICT" to "Taylor Family Digital Library"): scale the font down by
+    // character count, and scale it with the container (via cqw) so it stays readable-sized
+    // on a wide desktop screen without changing how it looks on the mobile widths this is
+    // mainly viewed at. Capped at 30px (the container's ~1.4x growth over the old 21px cap).
+    const announceChars = mapCaption.length || 1;
+    const announceFontSize = "clamp(11px, " + (100 / (announceChars * 0.52)).toFixed(2) + "cqw, 30px)";
+
+    // shown below the map; blank on the reveal step (text now lives in the announcement
+    // heading instead) and on the final page (cut per feedback).
+    let belowMapText;
+    if (s.step === "intro") belowMapText = "Your route across campus begins at MacEwan Student Centre.";
+    else belowMapText = "";
 
     // survey
     const ctx = s.surveyOpen || "pre";
@@ -697,6 +712,8 @@ class Component extends DCLogic {
       mapBuildings: mapBuildings,
       mapRoads: mapRoads,
       mapCaption: mapCaption,
+      announceFontSize: announceFontSize,
+      belowMapText: belowMapText,
       mapShowCurrent: true,
       currentCx: currentB.cx,
       currentCy: currentB.cy,
