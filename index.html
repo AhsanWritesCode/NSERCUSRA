@@ -61,9 +61,6 @@
               <circle cx="{{ currentCx }}" cy="{{ currentCy }}" r="12" fill="#C1552E" opacity="0.4" style="filter:url(#mapGlow); transform-box:fill-box; transform-origin:center; animation:markerPulse 1.6s ease-in-out infinite;"></circle>
               <circle cx="{{ currentCx }}" cy="{{ currentCy }}" r="5" fill="#A2472F" style="transform-box:fill-box; transform-origin:center; animation:markerPulse 1.6s ease-in-out infinite;"></circle>
             </sc-if>
-            <sc-if value="{{ mapShowStar }}" hint-placeholder-val="{{ false }}">
-              <path d="{{ starD }}" fill="#A2472F"></path>
-            </sc-if>
           </svg>
           <div style="position:absolute; inset:0; pointer-events:none; background:radial-gradient(120% 100% at 50% 0%, transparent 55%, rgba(120,80,40,.1) 100%);"></div>
           <sc-for list="{{ mapBuildings }}" as="b" hint-placeholder-count="5">
@@ -445,14 +442,6 @@ class Component extends DCLogic {
   legPathD(leg) {
     return "M" + leg.p0[0] + "," + leg.p0[1] + " Q" + leg.p1[0] + "," + leg.p1[1] + " " + leg.p2[0] + "," + leg.p2[1];
   }
-  starPath(cx, cy) {
-    const oy = cy - 18;
-    const pts = [
-      [0, -8], [2.2, -2.6], [8, -2.4], [3.4, 1.4], [5, 7.4],
-      [0, 4], [-5, 7.4], [-3.4, 1.4], [-8, -2.4], [-2.2, -2.6]
-    ];
-    return "M" + pts.map(p => (cx + p[0]) + "," + (oy + p[1])).join(" L") + " Z";
-  }
   // Small footprint/paw outline, drawn pointing "up" (toe at [0,-6]) in its own
   // local space. Rotated to face the direction of travel and baked into absolute
   // map coordinates below, rather than positioned via a CSS transform.
@@ -672,7 +661,6 @@ class Component extends DCLogic {
       .filter((leg, i) => !(activeLeg && i === legIndex))
       .map(leg => this.legPathD(leg));
     const currentB = this.BUILDINGS[currentBid];
-    const ictB = this.BUILDINGS.ICT;
 
     // shown as the announcement heading above the map (gated by showRevealAnnounce below)
     let mapCaption;
@@ -717,8 +705,6 @@ class Component extends DCLogic {
       mapShowCurrent: true,
       currentCx: currentB.cx,
       currentCy: currentB.cy,
-      mapShowStar: isFinal,
-      starD: this.starPath(ictB.cx, ictB.cy),
       mapShowPath: !!activeLeg,
       mapFootsteps: activeLeg ? this.buildLegFootsteps(activeLeg) : [],
       isFinal: isFinal,
