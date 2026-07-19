@@ -152,7 +152,7 @@
               </div>
 
               <sc-if value="{{ !revealed }}" hint-placeholder-val="{{ true }}">
-                <button style="width:100%; margin-top:22px; padding:17px; background:#A2472F; color:#F7EFE4; border:none; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:15px; cursor:pointer; transition:background .2s;" style-hover="background:#8E3C27;" onClick="{{ revealPiece }}">Reveal next object's location</button>
+                <button style="width:100%; margin-top:22px; padding:17px; background:#A2472F; color:#F7EFE4; border:none; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:15px; cursor:pointer; transition:background .2s;" style-hover="background:#8E3C27;" onClick="{{ revealPiece }}">{{ revealButtonLabel }}</button>
               </sc-if>
 
               <sc-if value="{{ revealed }}" hint-placeholder-val="{{ false }}">
@@ -653,6 +653,11 @@ class Component extends DCLogic {
     // quote box, and button all live on the read screen and react to this directly).
     const revealed = !!s.collected[num];
 
+    // if this is the only stop left, clicking the button completes the hunt rather than
+    // revealing a next object's location — so the button shouldn't claim it will.
+    const isLastPiece = !revealed && collectedCount === total - 1;
+    const revealButtonLabel = isLastPiece ? "Complete the hunt" : "Reveal next object's location";
+
     // campus map: buildings, "you are here" marker, and (once revealed, in order) the
     // animated path + footsteps to the next stop. Legs are only defined for the intended
     // forward order (stop N -> stop N+1) — an out-of-order scan just skips drawing a path
@@ -791,6 +796,7 @@ class Component extends DCLogic {
       // read
       theme: data.theme,
       quote: data.quote,
+      revealButtonLabel: revealButtonLabel,
       revealPiece: () => this.revealPiece(),
       // goGuess: () => this.goStep("guess"),                // GUESS STEP temporarily removed (2026-07)
 
